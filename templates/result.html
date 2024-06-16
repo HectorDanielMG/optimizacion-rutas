@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado - Búsqueda de Costo Uniforme</title>
+    <!-- Incluir Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Incluir FontAwesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Azul claro de fondo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 70%; /* Ancho máximo del contenedor ajustado */
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Sombra */
+            text-align: center;
+            margin: 20px auto; /* Margen automático arriba y abajo, centrado horizontalmente */
+        }
+        h1, h2 {
+            color: #007bff; /* Azul de Bootstrap para títulos principales */
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra ligera */
+        }
+        .btn-back {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .icon {
+            font-size: 50px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .marker {
+            font-size: 30px;
+            color: #28a745; /* Verde para marcadores */
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <i class="fas fa-map-marker-alt"></i> <!-- Icono de mapa -->
+        </div>
+        <h1>{{ algoritmo }}</h1>
+        <h2>Ruta óptima</h2>
+        <p>{{ ruta }}</p>
+        <h2>Distancia Total</h2>
+        <p>{{ distancia_total }} KM</p>
+        <div id="map"></div>
+
+        <!-- Botón para regresar al inicio -->
+        <div class="btn-back">
+            <a href="/" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Ingresar Nuevas Ciudades</a>
+        </div>
+    </div>
+
+    <!-- Incluir Bootstrap JS al final del body para mejores prácticas -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- Script de Google Maps -->
+    <script>
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 5,
+                center: { lat: 19.432608, lng: -99.133209 }
+            });
+
+            var routeCoords = [
+                {% for coord in coordenadas_ruta %}
+                { lat: {{ coord[0] }}, lng: {{ coord[1] }} },
+                {% endfor %}
+            ];
+
+            var routePath = new google.maps.Polyline({
+                path: routeCoords,
+                geodesic: true,
+                strokeColor: '#007bff', // Cambio el color de la línea a azul
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            routePath.setMap(map);
+
+            // Marcadores para inicio y fin
+            var startMarker = new google.maps.Marker({
+                position: { lat: {{ coordenadas_ruta[0][0] }}, lng: {{ coordenadas_ruta[0][1] }} },
+                map: map,
+                title: 'Inicio: {{ start_city }}',
+                icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+            });
+
+            var endMarker = new google.maps.Marker({
+                position: { lat: {{ coordenadas_ruta[-1][0] }}, lng: {{ coordenadas_ruta[-1][1] }} },
+                map: map,
+                title: 'Fin: {{ end_city }}',
+                icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+            });
+
+            // Marcadores azules para ciudades en la ruta
+            var blueIcon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+            {% for coord in coordenadas_ruta[1:-1] %}
+            var marker = new google.maps.Marker({
+                position: { lat: {{ coord[0] }}, lng: {{ coord[1] }} },
+                map: map,
+                icon: blueIcon
+            });
+            {% endfor %}
+        }
+    </script>
+    <!-- Script de Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkrpD9_8hLKcjBtF8Hq3h86vCnVaJ_ul8&callback=initMap" async defer></script>
+</body>
+</html>

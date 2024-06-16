@@ -1,67 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALGORITMOS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Optimizacion de Rutas</title>
+    <!-- Incluir Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Incluir FontAwesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            background-color: #f0faff; /* Fondo azul claro */
-            height: 100vh; /* Establecer altura al 100% de la ventana */
-            display: flex; /* Usar flexbox para alinear contenido */
-            flex-direction: column; /* Alinear elementos en una columna */
-            justify-content: space-between; /* Espacio entre elementos */
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Azul claro de fondo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-
         .container {
-            text-align: center; /* Centrar el contenido */
-            padding-top: 50px; /* Espacio superior */
+            max-width: 600px; /* Ancho máximo del contenedor ajustado */
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Sombra */
+            text-align: center;
         }
-
-        .result-container {
-            border: 1px solid rgba(0, 0, 0, 0.125);
-            border-radius: 0.25rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            padding: 20px;
-            margin-top: 20px;
-            background-color: rgba(255, 255, 255, 0.9); /* Color de fondo blanco con transparencia */
-        }
-
         h1 {
-            color: #2c3e50; /* Color de texto azul oscuro */
+            color: #007bff; /* Azul de Bootstrap para títulos principales */
+            margin-bottom: 20px;
         }
-
-        .footer {
-            text-align: center; /* Centrar el contenido */
-            background-color: #f0faff; /* Fondo azul claro */
-            padding: 20px 0; /* Espacio interior */
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .icon {
+            font-size: 50px;
+            color: #007bff;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">ALGORITMOS</h1>
-        <div class="d-grid gap-2 col-6 mx-auto mt-4">
-            <a href="{{ url_for('hill_climbing') }}" class="btn btn-primary">Hill Climbing</a>
-            <a href="{{ url_for('simulated_annealing_route') }}" class="btn btn-primary">Simulated Annealing</a>
+        <div class="icon">
+            <i class="fas fa-road"></i> <!-- Icono de ruta -->
         </div>
-        <div class="result-container mt-5">
-            {% if hill_climbing_result %}
-                <h2>Hill Climbing Result</h2>
-                <p>Ruta óptima: {{ hill_climbing_result.ruta }}</p>
-                <p>Distancia Total: {{ hill_climbing_result.distancia_total }}</p>
-            {% endif %}
-            {% if simulated_annealing_result %}
-                <h2>Simulated Annealing Result</h2>
-                <p>Ruta óptima: {{ simulated_annealing_result.ruta }}</p>
-                <p>Distancia Total: {{ simulated_annealing_result.distancia_total }}</p>
-            {% endif %}
-        </div>
+        <h1>Optimizacion de Rutas</h1>
+        <form action="/busqueda_costo_uniforme" method="post">
+            <label for="start_city">Ciudad de Inicio:</label>
+            <select id="start_city" name="start_city">
+                <option>--SELECCIONAR CIUDAD--</option>
+                <option value="Aguascalientes">Aguascalientes</option>
+                <option value="Baja California">Baja California</option>
+                <option value="Baja California Sur">Baja California Sur</option>
+                <option value="Campeche">Campeche</option>
+                <option value="Chiapas">Chiapas</option>
+                <option value="Chihuahua">Chihuahua</option>
+                <option value="Ciudad de México">Ciudad de México</option>
+                <option value="Coahuila">Coahuila</option>
+                <option value="Colima">Colima</option>
+                <option value="Durango">Durango</option>
+                <option value="Guanajuato">Guanajuato</option>
+                <option value="Guerrero">Guerrero</option>
+                <option value="Hidalgo">Hidalgo</option>
+                <option value="Jalisco">Jalisco</option>
+                <option value="México">México</option>
+                <option value="Michoacán">Michoacán</option>
+                <option value="Morelos">Morelos</option>
+                <option value="Nayarit">Nayarit</option>
+                <option value="Nuevo León">Nuevo León</option>
+                <option value="Oaxaca">Oaxaca</option>
+                <option value="Puebla">Puebla</option>
+                <option value="Querétaro">Querétaro</option>
+                <option value="Quintana Roo">Quintana Roo</option>
+                <option value="San Luis Potosí">San Luis Potosí</option>
+                <option value="Sinaloa">Sinaloa</option>
+                <option value="Sonora">Sonora</option>
+                <option value="Tabasco">Tabasco</option>
+                <option value="Tamaulipas">Tamaulipas</option>
+                <option value="Tlaxcala">Tlaxcala</option>
+                <option value="Veracruz">Veracruz</option>
+                <option value="Yucatán">Yucatán</option>
+                <option value="Zacatecas">Zacatecas</option>
+            </select>
+
+            <label for="end_city">Ciudad de Destino:</label>
+            <select id="end_city" name="end_city">
+                <option>--SELECCIONAR CIUDAD--</option>
+                <option value="Aguascalientes">Aguascalientes</option>
+                <option value="Baja California">Baja California</option>
+                <option value="Baja California Sur">Baja California Sur</option>
+                <option value="Campeche">Campeche</option>
+                <option value="Chiapas">Chiapas</option>
+                <option value="Chihuahua">Chihuahua</option>
+                <option value="Ciudad de México">Ciudad de México</option>
+                <option value="Coahuila">Coahuila</option>
+                <option value="Colima">Colima</option>
+                <option value="Durango">Durango</option>
+                <option value="Guanajuato">Guanajuato</option>
+                <option value="Guerrero">Guerrero</option>
+                <option value="Hidalgo">Hidalgo</option>
+                <option value="Jalisco">Jalisco</option>
+                <option value="México">México</option>
+                <option value="Michoacán">Michoacán</option>
+                <option value="Morelos">Morelos</option>
+                <option value="Nayarit">Nayarit</option>
+                <option value="Nuevo León">Nuevo León</option>
+                <option value="Oaxaca">Oaxaca</option>
+                <option value="Puebla">Puebla</option>
+                <option value="Querétaro">Querétaro</option>
+                <option value="Quintana Roo">Quintana Roo</option>
+                <option value="San Luis Potosí">San Luis Potosí</option>
+                <option value="Sinaloa">Sinaloa</option>
+                <option value="Sonora">Sonora</option>
+                <option value="Tabasco">Tabasco</option>
+                <option value="Tamaulipas">Tamaulipas</option>
+                <option value="Tlaxcala">Tlaxcala</option>
+                <option value="Veracruz">Veracruz</option>
+                <option value="Yucatán">Yucatán</option>
+                <option value="Zacatecas">Zacatecas</option>
+            </select>
+            <button type="submit">Buscar Ruta</button>
+        </form>
     </div>
-    <div class="footer">
-        <h2>Hector Daniel Marmolejo Garcia</h2>
-    </div>
+
+    <!-- Incluir Bootstrap JS al final del body para mejores prácticas -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
