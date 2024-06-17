@@ -80,53 +80,40 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <!-- Script de Google Maps -->
     <script>
-        function initMap() {
+     function initMap() {
             var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 5,
+                zoom: 7,
                 center: { lat: 19.432608, lng: -99.133209 }
             });
-
-            var routeCoords = [
-                {% for coord in coordenadas_ruta %}
-                { lat: {{ coord[0] }}, lng: {{ coord[1] }} },
-                {% endfor %}
-            ];
-
-            var routePath = new google.maps.Polyline({
-                path: routeCoords,
-                geodesic: true,
-                strokeColor: '#007bff', // Cambio el color de la línea a azul
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
-
-            routePath.setMap(map);
-
-            // Marcadores para inicio y fin
-            var startMarker = new google.maps.Marker({
-                position: { lat: {{ coordenadas_ruta[0][0] }}, lng: {{ coordenadas_ruta[0][1] }} },
-                map: map,
-                title: 'Inicio: {{ start_city }}',
-                icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
-            });
-
-            var endMarker = new google.maps.Marker({
-                position: { lat: {{ coordenadas_ruta[-1][0] }}, lng: {{ coordenadas_ruta[-1][1] }} },
-                map: map,
-                title: 'Fin: {{ end_city }}',
-                icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-            });
-
-            // Marcadores azules para ciudades en la ruta
-            var blueIcon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+        
+            var directionsService = new google.maps.DirectionsService();
+            var directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+        
+            var waypts = [];
             {% for coord in coordenadas_ruta[1:-1] %}
-            var marker = new google.maps.Marker({
-                position: { lat: {{ coord[0] }}, lng: {{ coord[1] }} },
-                map: map,
-                icon: blueIcon
+            waypts.push({
+                location: new google.maps.LatLng({ lat: {{ coord[0] }}, lng: {{ coord[1] }} }),
+                stopover: true
             });
             {% endfor %}
+        
+            directionsService.route({
+                origin: { lat: {{ coordenadas_ruta[0][0] }}, lng: {{ coordenadas_ruta[0][1] }} },
+                destination: { lat: {{ coordenadas_ruta[-1][0] }}, lng: {{ coordenadas_ruta[-1][1] }} },
+                waypoints: waypts,
+                optimizeWaypoints: true,
+                travelMode: 'DRIVING'
+            }, function(response, status) {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
         }
+        
+        
     </script>
     <!-- Script de Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkrpD9_8hLKcjBtF8Hq3h86vCnVaJ_ul8&callback=initMap" async defer></script>
